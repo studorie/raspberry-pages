@@ -924,7 +924,28 @@ a:focus-visible,
   }
 
   .cover-note {
-    display: none;
+    display: block;
+    width: 180px;
+    right: -2px;
+    bottom: 12%;
+    padding: 22px 17px 16px;
+    z-index: 5;
+
+    transform: rotate(4deg) scale(.82);
+    transform-origin: bottom right;
+  }
+
+  .cover-note strong {
+  font-size: 16px;
+  }
+
+  .cover-note p {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .cover-note .note-heart {
+    font-size: 20px;
   }
 
   .berry-a {
@@ -982,6 +1003,13 @@ a:focus-visible,
 @media (max-width: 440px) {
   .cover-title h1 {
     font-size: 88px;
+  }
+
+  .cover-note {
+    width: 165px;
+    right: -5px;
+    bottom: 13%;
+    transform: rotate(4deg) scale(.76);
   }
 
   .cover-title h2 {
