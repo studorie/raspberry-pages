@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#5b0b32">
+  <meta name="color-scheme" content="light">
+  <title>Alchemised — Raspberry Reader</title>
+  <link rel="stylesheet" href="styles.css?v=12">
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">Skip to reading</a>
+
+  <main id="mainContent" class="app" tabindex="-1">
+    <section id="coverScreen" class="screen cover-screen">
+      <img
+        class="raspberry-photo raspberry-sprig"
+        src="assets/raspberry-sprig.png"
+        alt=""
+        aria-hidden="true"
+      >
+
+      <img
+        class="raspberry-photo raspberry-pair"
+        src="assets/raspberry-pair.png"
+        alt=""
+        aria-hidden="true"
+      >
+
+      <img
+        class="raspberry-photo raspberry-single"
+        src="assets/raspberry-single.png"
+        alt=""
+        aria-hidden="true"
+      >
+
+      <div class="cover-wrap">
+        <div class="book-cover">
+          <div class="cover-border"></div>
+
+          <div class="cover-top">
+            <img
+              class="mini-berry"
+              src="assets/raspberry-single.png"
+              alt=""
+              aria-hidden="true"
+            >
+            <p>a little corner of the internet, made for m’lady</p>
+          </div>
+
+          <div class="cover-title">
+            <span class="gift-for">for</span>
+            <h1>Adi</h1>
+            <div class="flourish"><span></span>❦<span></span></div>
+            <h2>Alchemised</h2>
+          </div>
+
+          <div class="cover-bottom">
+            <button id="startBtn" class="raspberry-button">Open your book <span>→</span></button>
+            <p>← → keys &nbsp;•&nbsp; swipe on mobile &nbsp;•&nbsp; your place is remembered</p>
+          </div>
+        </div>
+
+        <aside class="cover-note">
+          <span class="note-pin"></span>
+          <strong>No commitment, m’lady.</strong>
+          <p>Give it a few pages.</p>
+          <p>If it steals you away from me,<br>I suppose I built it too well.</p>
+          <span class="note-heart" aria-hidden="true">♡</span>
+        </aside>
+      </div>
+    </section>
+
+    <section id="libraryScreen" class="screen reader-screen hidden">
+      <header class="reader-header">
+        <button id="homeBtn" class="round-button" aria-label="Back to cover">⌂</button>
+
+        <div class="reader-heading">
+          <div class="reader-kicker">RASPBERRY READER</div>
+          <div id="chapterHeading" class="reader-title">Chapter</div>
+        </div>
+
+        <div class="reader-actions">
+          <button id="moodBtn" class="round-button mood-button" type="button" aria-label="Reading mood" aria-controls="moodPanel" aria-expanded="false">☂</button>
+          <button id="chaptersBtn" class="round-button chapter-menu-button" type="button" aria-label="Open chapters" aria-controls="chapterDrawer" aria-expanded="false">☰</button>
+        </div>
+      </header>
+
+      <div class="reading-progress" role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div id="progressBar"></div>
+      </div>
+
+      <aside id="moodPanel" class="mood-panel" aria-hidden="true" aria-label="Reading mood panel">
+        <div class="mood-panel-head">
+          <div>
+            <span>Reading mood</span>
+            <strong>Make it comfortable</strong>
+          </div>
+          <button id="closeMoodBtn" class="mood-close" aria-label="Close reading mood">×</button>
+        </div>
+
+        <button id="warmLightToggle" class="mood-toggle-row" type="button" aria-pressed="false">
+          <span class="mood-icon">☀</span>
+          <span class="mood-copy">
+            <strong>Warm light</strong>
+            <small>Softer cream pages for night reading</small>
+          </span>
+          <span class="toggle-switch" aria-hidden="true"><i></i></span>
+        </button>
+
+        <div class="audio-player-card">
+          <div class="audio-meta">
+            <span id="trackKind" class="track-kind">background ambience</span>
+            <strong id="trackTitle">Rain ambience</strong>
+          </div>
+
+          <div class="audio-controls">
+            <button id="playPauseBtn" class="audio-control primary-audio" type="button" aria-label="Play audio">▶</button>
+            <button id="nextTrackBtn" class="audio-control" type="button" aria-label="Next track">››</button>
+
+            <div class="volume-wrap">
+              <span aria-hidden="true">♬</span>
+              <input id="volumeSlider" type="range" min="0" max="100" step="1" value="32" aria-label="Audio volume">
+              <span id="volumeValue" class="volume-value">32%</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="mood-hint">Rain loops quietly while you read. There may be one other track hiding here.</p>
+      </aside>
+
+      <div class="reader-stage">
+        <button id="prevBtn" class="page-arrow page-arrow-left" aria-label="Previous page">‹</button>
+
+        <article id="pageCard" class="paper-page" aria-live="polite" aria-label="Reading page">
+          <div class="page-watermark berry-mark" aria-hidden="true">●</div>
+
+          <div class="paper-header">
+            <span id="pageChapter">Alchemised</span>
+            <span id="pageNumberTop">1</span>
+          </div>
+
+          <div id="pageBody" class="page-body" aria-live="polite" aria-atomic="true"></div>
+
+          <div class="paper-footer">
+            <img
+              class="tiny-raspberry"
+              src="assets/raspberry-single.png"
+              alt=""
+              aria-hidden="true"
+            >
+            <span id="pageCounter">Page 1 of 1</span>
+          </div>
+        </article>
+
+        <button id="nextBtn" class="page-arrow page-arrow-right" aria-label="Next page">›</button>
+      </div>
+
+      <footer class="reader-footer">
+        <button id="prevTextBtn" class="footer-button">← Previous</button>
+        <div id="chapterProgressText" class="footer-status">Chapter</div>
+        <button id="nextTextBtn" class="footer-button">Next →</button>
+      </footer>
+
+      <aside id="chapterDrawer" class="chapter-drawer" aria-hidden="true" aria-label="Chapter list">
+        <div class="drawer-backdrop" data-close-drawer></div>
+        <div class="drawer-panel">
+          <div class="drawer-head">
+            <div>
+              <span>Pick a chapter</span>
+              <strong>Alchemised</strong>
+            </div>
+            <button id="closeDrawerBtn" class="round-button" aria-label="Close chapters">×</button>
+          </div>
+
+          <div class="drawer-note">
+            <span class="mini-berry-icon">●</span>
+            Chapters with a raspberry dot have local reader content.
+          </div>
+
+          <div id="chapterList" class="chapter-list"></div>
+        </div>
+      </aside>
+
+      <aside id="pigeonEasterEgg" class="pigeon-easter-egg" aria-hidden="true">
+        <div class="pigeon-bubble">
+          <strong>Are you going to feed me?</strong>
+          <span>I promise no other pigeons will come through. It’s just me.</span>
+        </div>
+        <img src="assets/adi-pigeon.png" alt="" aria-hidden="true">
+      </aside>
+
+      <button
+        id="pigeonTouchHotspot"
+        class="pigeon-touch-hotspot"
+        type="button"
+        aria-label=""
+        tabindex="-1"
+      ></button>
+    </section>
+
+    <div id="secretToast" class="secret-toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <audio id="ambientAudio" preload="metadata"></audio>
+  </main>
+
+  <script src="app.js?v=12"></script>
+</body>
+</html>

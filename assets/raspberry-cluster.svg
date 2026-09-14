@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 310">
+<defs>
+  <radialGradient id="berryA" cx="30%" cy="24%" r="76%">
+    <stop offset="0" stop-color="#fb7bad"/>
+    <stop offset=".38" stop-color="#e83d82"/>
+    <stop offset=".78" stop-color="#b6175d"/>
+    <stop offset="1" stop-color="#78083c"/>
+  </radialGradient>
+  <radialGradient id="berryB" cx="32%" cy="23%" r="78%">
+    <stop offset="0" stop-color="#f46c9e"/>
+    <stop offset=".40" stop-color="#d92b72"/>
+    <stop offset=".80" stop-color="#a00f50"/>
+    <stop offset="1" stop-color="#67052f"/>
+  </radialGradient>
+  <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1">
+    <stop stop-color="#91ad67"/>
+    <stop offset=".5" stop-color="#5c7d42"/>
+    <stop offset="1" stop-color="#2f4b28"/>
+  </linearGradient>
+  <linearGradient id="stem" x1="0" y1="0" x2="1" y2="1">
+    <stop stop-color="#8da35f"/>
+    <stop offset="1" stop-color="#405a31"/>
+  </linearGradient>
+  <filter id="shadow" x="-30%" y="-30%" width="170%" height="190%">
+    <feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#310017" flood-opacity=".35"/>
+  </filter>
+</defs>
+
+<g filter="url(#shadow)">
+  <!-- branch -->
+  <path d="M64 85 C130 46 192 47 256 78 C280 90 301 106 319 127"
+        fill="none" stroke="url(#stem)" stroke-width="10" stroke-linecap="round"/>
+
+  <!-- leaves -->
+  <path d="M65 84 C23 54 4 32 8 7 C55 9 85 26 111 55 C94 70 82 78 65 84Z" fill="url(#leaf)"/>
+  <path d="M126 60 C104 28 104 9 121 0 C146 19 156 39 154 67 C142 66 135 63 126 60Z" fill="url(#leaf)"/>
+  <path d="M235 72 C253 38 278 23 311 26 C299 61 277 78 246 88Z" fill="url(#leaf)"/>
+  <path d="M296 108 C329 77 352 74 375 88 C357 119 334 132 305 132Z" fill="url(#leaf)"/>
+
+  <!-- left berry -->
+  <g transform="translate(58 82) scale(.92)">
+    <g stroke="#801044" stroke-width="1.2" fill="url(#berryA)">
+      <circle cx="82" cy="38" r="18"/>
+      <circle cx="61" cy="49" r="18"/><circle cx="103" cy="49" r="18"/>
+      <circle cx="43" cy="68" r="18"/><circle cx="82" cy="68" r="19"/><circle cx="121" cy="68" r="18"/>
+      <circle cx="33" cy="91" r="18"/><circle cx="63" cy="91" r="19"/><circle cx="101" cy="91" r="19"/><circle cx="131" cy="91" r="18"/>
+      <circle cx="46" cy="116" r="18"/><circle cx="82" cy="116" r="19"/><circle cx="118" cy="116" r="18"/>
+      <circle cx="60" cy="139" r="17"/><circle cx="103" cy="139" r="17"/>
+      <circle cx="82" cy="160" r="15"/>
+    </g>
+    <path d="M80 31 C63 18 51 14 36 17 C47 31 59 37 77 38Z" fill="url(#leaf)"/>
+    <path d="M88 31 C104 17 121 16 136 22 C123 34 109 39 91 38Z" fill="url(#leaf)"/>
+  </g>
+
+  <!-- right berry -->
+  <g transform="translate(183 103) scale(.78)">
+    <g stroke="#74103e" stroke-width="1.2" fill="url(#berryB)">
+      <circle cx="82" cy="38" r="18"/>
+      <circle cx="61" cy="49" r="18"/><circle cx="103" cy="49" r="18"/>
+      <circle cx="43" cy="68" r="18"/><circle cx="82" cy="68" r="19"/><circle cx="121" cy="68" r="18"/>
+      <circle cx="33" cy="91" r="18"/><circle cx="63" cy="91" r="19"/><circle cx="101" cy="91" r="19"/><circle cx="131" cy="91" r="18"/>
+      <circle cx="46" cy="116" r="18"/><circle cx="82" cy="116" r="19"/><circle cx="118" cy="116" r="18"/>
+      <circle cx="60" cy="139" r="17"/><circle cx="103" cy="139" r="17"/>
+      <circle cx="82" cy="160" r="15"/>
+    </g>
+    <path d="M80 31 C63 18 51 14 36 17 C47 31 59 37 77 38Z" fill="url(#leaf)"/>
+    <path d="M88 31 C104 17 121 16 136 22 C123 34 109 39 91 38Z" fill="url(#leaf)"/>
+  </g>
+</g>
+</svg>
