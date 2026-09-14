@@ -9,7 +9,7 @@
   <title>Alchemised — Raspberry Reader</title>
   <link rel="icon" type="image/png" href="assets/raspberry-reader.png">
   <link rel="apple-touch-icon" href="assets/raspberry-reader.png">
-  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="styles.css?v=15">
 </head>
 <body>
   <a class="skip-link" href="#mainContent">Skip to reading</a>
@@ -133,9 +133,7 @@
       </aside>
 
       <div class="reader-stage">
-        <button id="prevBtn" class="page-arrow page-arrow-left" aria-label="Previous page">‹</button>
-
-        <article id="pageCard" class="paper-page" aria-live="polite" aria-label="Reading page">
+<article id="pageCard" class="paper-page" aria-live="polite" aria-label="Reading page">
           <div class="page-watermark berry-mark" aria-hidden="true">●</div>
 
           <div class="paper-header">
@@ -155,9 +153,7 @@
             <span id="pageCounter">Page 1 of 1</span>
           </div>
         </article>
-
-        <button id="nextBtn" class="page-arrow page-arrow-right" aria-label="Next page">›</button>
-      </div>
+</div>
 
       <footer class="reader-footer">
         <button id="prevTextBtn" class="footer-button">← Previous</button>
@@ -177,9 +173,36 @@
           </div>
 
           <div class="drawer-note">
-            <span class="mini-berry-icon">●</span>
-            Chapters with a raspberry dot have local reader content.
+            <img
+              class="drawer-note-berry"
+              src="assets/raspberry-single.png"
+              alt=""
+              aria-hidden="true"
+            >
+            <div>
+              <strong>Remember where you left off, Adi?</strong>
+              <span>Just open the book and I’ll take you back there. Or pick a chapter and jump straight to any page.</span>
+            </div>
           </div>
+
+          <form id="pageJumpForm" class="page-jump" autocomplete="off">
+            <label for="pageJumpInput">Jump to page</label>
+            <div class="page-jump-row">
+              <input
+                id="pageJumpInput"
+                type="number"
+                min="1"
+                step="1"
+                inputmode="numeric"
+                placeholder="e.g. 300"
+                aria-describedby="pageJumpHint"
+              >
+              <button id="pageJumpBtn" class="page-jump-button" type="submit">Go</button>
+            </div>
+            <small id="pageJumpHint">
+              I’ll remember where you stopped on this device. Page numbers can change a little on a different screen.
+            </small>
+          </form>
 
           <div id="chapterList" class="chapter-list"></div>
         </div>
@@ -207,6 +230,6 @@
     <audio id="ambientAudio" preload="metadata"></audio>
   </main>
 
-  <script src="app.js?v=12"></script>
+  <script src="app.js?v=15"></script>
 </body>
 </html>

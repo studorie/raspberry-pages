@@ -55,8 +55,6 @@ const libraryScreen = document.getElementById("libraryScreen");
 const startBtn = document.getElementById("startBtn");
 const homeBtn = document.getElementById("homeBtn");
 
-const prevBtn = document.getElementById("prevBtn");
-const nextBtn = document.getElementById("nextBtn");
 const prevTextBtn = document.getElementById("prevTextBtn");
 const nextTextBtn = document.getElementById("nextTextBtn");
 
@@ -74,6 +72,10 @@ const chapterDrawer = document.getElementById("chapterDrawer");
 const chapterList = document.getElementById("chapterList");
 const chaptersBtn = document.getElementById("chaptersBtn");
 const closeDrawerBtn = document.getElementById("closeDrawerBtn");
+const pageJumpForm = document.getElementById("pageJumpForm");
+const pageJumpInput = document.getElementById("pageJumpInput");
+const pageJumpBtn = document.getElementById("pageJumpBtn");
+const pageJumpHint = document.getElementById("pageJumpHint");
 
 const moodBtn = document.getElementById("moodBtn");
 const moodPanel = document.getElementById("moodPanel");
@@ -268,7 +270,6 @@ function renderChapterDrawer() {
   chapterList.innerHTML = chapters.map((chapter, index) => {
     const classes = [
       "chapter-item",
-      chapter.content ? "local" : "",
       index === currentChapterIndex ? "active" : ""
     ].filter(Boolean).join(" ");
 
@@ -278,7 +279,6 @@ function renderChapterDrawer() {
 
     return `
       <button class="${classes}" data-chapter-index="${index}">
-        <span class="available-dot" aria-hidden="true"></span>
         <span class="chapter-name">${escapeHtml(chapter.label)}</span>
         ${pageStart}
         <span aria-hidden="true">›</span>
@@ -293,12 +293,75 @@ function renderChapterDrawer() {
       loadChapter(index, 0);
     });
   });
+
+  updatePageJumpUI();
+}
+
+function updatePageJumpUI() {
+  if (!pageJumpInput || !pageJumpHint) return;
+
+  if (bookPaginationReady && totalBookPages > 0) {
+    pageJumpInput.max = String(totalBookPages);
+    const current = globalPageNumber();
+    pageJumpInput.placeholder = current ? `Current: ${current}` : "e.g. 300";
+    pageJumpHint.textContent = `Pages 1–${totalBookPages} · your place is saved automatically on this device.`;
+  } else {
+    pageJumpInput.removeAttribute("max");
+    pageJumpInput.placeholder = "e.g. 300";
+    pageJumpHint.textContent = "Page numbers are calculated for this screen.";
+  }
+}
+
+async function jumpToBookPage(rawPage) {
+  const requested = Math.trunc(Number(rawPage));
+
+  if (!Number.isFinite(requested) || requested < 1) {
+    if (pageJumpHint) pageJumpHint.textContent = "Enter a page number first.";
+    pageJumpInput?.focus();
+    return;
+  }
+
+  if (pageJumpBtn) pageJumpBtn.disabled = true;
+  if (pageJumpHint) pageJumpHint.textContent = "Finding that page…";
+
+  await ensureBookPagination();
+
+  if (!bookPaginationReady || totalBookPages < 1) {
+    if (pageJumpBtn) pageJumpBtn.disabled = false;
+    if (pageJumpHint) pageJumpHint.textContent = "I couldn’t calculate the book pages just yet.";
+    return;
+  }
+
+  const target = Math.max(1, Math.min(requested, totalBookPages));
+  let targetChapter = chapters.length - 1;
+
+  for (let index = 0; index < chapters.length; index++) {
+    const firstPage = chapterPageOffsets[index] + 1;
+    const lastPage = chapterPageOffsets[index] + chapterPageCounts[index];
+
+    if (target >= firstPage && target <= lastPage) {
+      targetChapter = index;
+      break;
+    }
+  }
+
+  const targetLocalPage = target - chapterPageOffsets[targetChapter] - 1;
+
+  if (pageJumpInput) pageJumpInput.value = String(target);
+  if (pageJumpBtn) pageJumpBtn.disabled = false;
+  closeDrawer();
+  await loadChapter(targetChapter, targetLocalPage);
 }
 
 function openDrawer() {
   chapterDrawer.classList.add("open");
   chapterDrawer.setAttribute("aria-hidden", "false");
   chaptersBtn?.setAttribute("aria-expanded", "true");
+  updatePageJumpUI();
+
+  if (!bookPaginationReady) {
+    ensureBookPagination().then(updatePageJumpUI);
+  }
 }
 
 function closeDrawer() {
@@ -950,10 +1013,8 @@ function renderPage(direction = null) {
 
     progressBar.style.width = `${chapterFraction * 100}%`;
 
-    prevBtn.disabled = currentChapterIndex === 0;
-    nextBtn.disabled = currentChapterIndex === chapters.length - 1;
-    prevTextBtn.disabled = prevBtn.disabled;
-    nextTextBtn.disabled = nextBtn.disabled;
+    prevTextBtn.disabled = currentChapterIndex === 0;
+    nextTextBtn.disabled = currentChapterIndex === chapters.length - 1;
     saveState();
     return;
   }
@@ -1003,8 +1064,6 @@ function renderPage(direction = null) {
     currentChapterIndex === chapters.length - 1 &&
     currentPageIndex === pages.length - 1;
 
-  prevBtn.disabled = atBookStart;
-  nextBtn.disabled = atBookEnd;
   prevTextBtn.disabled = atBookStart;
   nextTextBtn.disabled = atBookEnd;
 
@@ -1068,8 +1127,6 @@ function reflowCurrentChapter() {
 startBtn.addEventListener("click", openLibrary);
 homeBtn.addEventListener("click", backToCover);
 
-prevBtn.addEventListener("click", goPrevious);
-nextBtn.addEventListener("click", goNext);
 prevTextBtn.addEventListener("click", goPrevious);
 nextTextBtn.addEventListener("click", goNext);
 
@@ -1078,6 +1135,11 @@ closeDrawerBtn.addEventListener("click", closeDrawer);
 
 chapterDrawer.querySelectorAll("[data-close-drawer]").forEach(node => {
   node.addEventListener("click", closeDrawer);
+});
+
+pageJumpForm?.addEventListener("submit", event => {
+  event.preventDefault();
+  jumpToBookPage(pageJumpInput?.value);
 });
 
 moodBtn?.addEventListener("click", () => {
@@ -1142,6 +1204,10 @@ pigeonTouchHotspot?.addEventListener("click", event => {
 
 document.addEventListener("keydown", event => {
   if (libraryScreen.classList.contains("hidden")) return;
+
+  if (event.target instanceof HTMLElement && event.target.closest("input, textarea, select")) {
+    return;
+  }
 
   if (event.key === "ArrowRight") {
     event.preventDefault();
