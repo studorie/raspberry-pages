@@ -712,12 +712,32 @@ async function tryPlayAudio() {
 
   try {
     await ambientAudio.play();
+
     moodSettings.soundEnabled = true;
     saveMoodSettings();
+    updateAudioControls();
+
   } catch (error) {
-    // Autoplay can still be blocked in unusual browser configurations. Keep the
-    // player usable and wait for the explicit play button.
-    console.debug("Audio playback needs another user gesture:", error);
+    console.debug("Audio not ready yet. Waiting for track...", error);
+
+    const retryPlayback = async () => {
+      if (!moodSettings.soundEnabled) return;
+
+      try {
+        await ambientAudio.play();
+
+        moodSettings.soundEnabled = true;
+        saveMoodSettings();
+        updateAudioControls();
+
+      } catch (retryError) {
+        console.debug("Audio retry failed:", retryError);
+      }
+    };
+
+    ambientAudio.addEventListener("canplay", retryPlayback, {
+      once: true
+    });
   }
 
   updateAudioControls();
