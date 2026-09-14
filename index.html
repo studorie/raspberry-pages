@@ -9,7 +9,7 @@
   <title>For Adi — Alchemised</title>
   <link rel="icon" type="image/png" href="assets/raspberry-reader.png">
   <link rel="apple-touch-icon" href="assets/raspberry-reader.png">
-  <link rel="stylesheet" href="styles.css?v=15">
+  <link rel="stylesheet" href="styles.css?v=16">
 </head>
 <body>
   <a class="skip-link" href="#mainContent">Skip to reading</a>
@@ -152,6 +152,18 @@
             >
             <span id="pageCounter">Page 1 of 1</span>
           </div>
+
+          <button
+            id="berryMessage"
+            class="berry-message"
+            type="button"
+            aria-label="Dismiss surprise message"
+            aria-live="polite"
+            hidden
+          >
+            <img src="assets/raspberry-single.png" alt="" aria-hidden="true">
+            <span id="berryMessageText"></span>
+          </button>
         </article>
 </div>
 
@@ -230,6 +242,6 @@
     <audio id="ambientAudio" preload="auto"></audio>
   </main>
 
-  <script src="app.js?v=15"></script>
+  <script src="app.js?v=16"></script>
 </body>
 </html>

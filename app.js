@@ -91,6 +91,408 @@ const volumeValue = document.getElementById("volumeValue");
 const secretToast = document.getElementById("secretToast");
 const pigeonEasterEgg = document.getElementById("pigeonEasterEgg");
 const pigeonTouchHotspot = document.getElementById("pigeonTouchHotspot");
+const berryMessage = document.getElementById("berryMessage");
+const berryMessageText = document.getElementById("berryMessageText");
+
+// Raspberry page messages
+// These are intentionally lightweight and infrequent. They appear only while
+// the reader is open, never require a response, and can be dismissed by tapping
+// anywhere on the message.
+const BERRY_MESSAGE_HISTORY_KEY = "adiBerryMessageHistory";
+const BERRY_MESSAGE_HISTORY_LIMIT = 15;
+const BERRY_MESSAGE_WEIGHTS = {
+  common: 55,
+  warm: 25,
+  uncommon: 15,
+  rare: 4,
+  veryRare: 1
+};
+
+const BERRY_MESSAGES = {
+  common: [
+    "A wild raspberry appeared.",
+    "Random raspberry delivery.",
+    "Emergency raspberry deployment.",
+    "🍓 ← found this for you.",
+    "Raspberry tax successfully avoided.",
+    "Carry on reading. I was never here.",
+    "Nothing to see here, m’lady.",
+    "This message will self-destruct eventually.",
+    "Alex.exe is currently behaving.",
+    "No allegations, please.",
+    "Objection overruled. Keep reading.",
+    "The court permits one raspberry.",
+    "Case closed. 🍓",
+    "Classified information. Keep scrolling.",
+    "You saw nothing.",
+    "This was definitely necessary.",
+    "Very serious website functionality.",
+    "Essential feature. Do not question it.",
+    "I spent development time on this btw.",
+    "Was this feature worth it? Absolutely.",
+    "Productivity has left the building.",
+    "Corporate suffering temporarily suspended.",
+    "Your motivation has clocked out.",
+    "HR has approved this raspberry.",
+    "Your suffering has been assigned a low-priority ticket.",
+    "Please allow 3 to 5 business days for emotional recovery.",
+    "~tiny raspberry noises~",
+    "~appears, refuses to elaborate~",
+    "~quietly leaves raspberry~",
+    "~pretends this feature was in scope~",
+    "~developer has lost the plot~",
+    "~Adi continues reading~",
+    "~perhaps hugs the reader~",
+    "~wipes nonexistent tears~",
+    "Drink some water, bookworm.",
+    "Posture check, m’lady.",
+    "Unclench your jaw. Yes, you.",
+    "Blink occasionally.",
+    "You still have a real life btw.",
+    "The book will survive if you take a break.",
+    "Go acquire snacks.",
+    "Raspberry break?",
+    "Have you eaten? Suspicious.",
+    "Pilates cannot save you from hydration.",
+    "I know you’re reading this instead of sleeping.",
+    "Go to sleep at a reasonable hour. Signed, a hypocrite."
+  ],
+  uncommon: [
+    "M’lady has been detected.",
+    "Adi privilege activated.",
+    "Clearance level: suspiciously high.",
+    "You’ve unlocked another unnecessary feature.",
+    "Congratulations. You found absolutely nothing useful.",
+    "Achievement unlocked: distracted by raspberry.",
+    "Achievement unlocked: still reading.",
+    "Achievement unlocked: tolerated Alex.",
+    "Achievement unlocked: good girl... wait, wrong menu.",
+    "No need to behave. This is your website.",
+    "Your attitude has been noted.",
+    "Classic Adi behaviour.",
+    "Somehow, I already know you’d argue with this message.",
+    "I can practically hear the ‘mhm.’",
+    "‘Maybe?’ Classic Adi answer. Reveals absolutely nothing.",
+    "I know that concentrated face is happening rn.",
+    "Stop judging my code.",
+    "Yes, I intentionally programmed this nonsense.",
+    "No, you cannot speak to the developer.",
+    "Developer unavailable. Probably bothering Adi.",
+    "Bug report rejected. Works on my machine.",
+    "Feature request denied, m’lady.",
+    "Fine. Feature request approved. You’re persuasive.",
+    "Your wish is my command. Terms and conditions absolutely apply.",
+    "Don’t even try using my own terms against me.",
+    "The court remembers your previous offences.",
+    "Appeal denied. Raspberry granted.",
+    "Evidence has mysteriously disappeared.",
+    "I blame the pigeon.",
+    "Somewhere, a pigeon knows what you did.",
+    "Pigeon surveillance remains active.",
+    "This message was approved by the pigeon council.",
+    "The pigeons told me to add this.",
+    "Don’t look at me. Blame the raspberries.",
+    "Raspberry beggar detected nearby.",
+    "Fine, you can have the extra 50 cents.",
+    "Economically irresponsible raspberry purchase approved.",
+    "€2.50 well invested.",
+    "One raspberry for m’lady. Alex gets his share."
+  ],
+  warm: [
+    "Hope you’re enjoying your little corner of the internet.",
+    "I hope this made you smile at least once.",
+    "Thinking about you. That’s it. Carry on.",
+    "Tiny reminder: I appreciate you.",
+    "I really enjoy having you around.",
+    "Still very glad I bumped into you.",
+    "You make ordinary days considerably less ordinary.",
+    "Thanks for letting me into your weird little world.",
+    "I like learning your little things.",
+    "Your stories, pigeons, food and random thoughts. I like hearing all of it.",
+    "I hope today has been kind to you.",
+    "In case nobody told you today: you’re doing alright.",
+    "You deserve some quiet in that busy head of yours.",
+    "No response required. Just appreciation.",
+    "This one doesn’t need an answer. ♡",
+    "Just leaving a little kindness here for you.",
+    "Consider this a tiny internet hug.",
+    "~perhaps hugs the subject as well~",
+    "You know I genuinely like listening to you, right?",
+    "I even like listening when you’re talking absolute shit. Especially then.",
+    "Your singing privileges remain permanently approved.",
+    "Five languages later and I’m somehow still listening.",
+    "I like hearing you be unapologetically you.",
+    "The unfiltered Adi is pretty great, you know.",
+    "You never need to perform for me. Just exist.",
+    "Whatever mood you’re in today is allowed here.",
+    "You can just read. Nothing is expected from you here.",
+    "This little corner belongs to you.",
+    "No pressure to love it. I loved making it for you.",
+    "Making this for you made me happy too.",
+    "Your smile was worth the lost sleep.",
+    "I’d probably build the stupid thing again.",
+    "You’re very easy to make things for when I pay attention.",
+    "Turns out paying attention to you gives me too many ideas."
+  ],
+  rare: [
+    "You cross my mind more than you probably realise.",
+    "I appreciate you more than I probably say properly.",
+    "I’m really happy our paths crossed.",
+    "Having you around has become one of my favourite little parts of the day.",
+    "You somehow challenge me, annoy me and make me smile at the same time. Impressive.",
+    "Underneath all the shit I give you, I care about you quite a bit.",
+    "Some people are simply nice to have around. You’re one of mine.",
+    "I hope you know you never owe me anything for caring about you.",
+    "I don’t need anything from you right now. I’m just happy you’re here.",
+    "You don’t have to find the right words with me.",
+    "You can take as long as you need with things that are difficult to say.",
+    "There’s no deadline on being comfortable with me.",
+    "I’ll listen whenever you actually want to talk.",
+    "No need to touch the hot stove. ♡",
+    "The stove can stay untouched as long as you need, m’lady.",
+    "Some things don’t need to be said for me to appreciate the intention behind them.",
+    "The fact that you wanted to say it was already enough.",
+    "You don’t owe this little cloud an answer either.",
+    "I hope this feels like somewhere you can just be Adi for a while.",
+    "I pay attention because I genuinely enjoy knowing you.",
+    "You’re worth paying attention to.",
+    "Still glad you’re here, m’lady."
+  ],
+  veryRare: [
+    "Hey. I’m thinking about you. ♡",
+    "If you found this one, consider yourself quietly appreciated.",
+    "You’re my favourite raspberry-shaped inconvenience.",
+    "Unfortunately, I’ve grown rather fond of you, m’lady.",
+    "Don’t get cocky about it, but you matter to me.",
+    "This website contains trace amounts of Alex having a soft spot for you.",
+    "Somewhere between the raspberries and all our bullshit, you became pretty important to me.",
+    "No clever joke for this one. I’m simply glad I know you.",
+    "I hope future-you finds this on a day she needs it. You’re appreciated.",
+    "If today is difficult, you don’t need to explain it. Be here for a while.",
+    "For once, no terms and conditions. Just ♡.",
+    "You found the sentimental one. Say nothing. My reputation is at stake.",
+    "Classified: I have a soft spot for m’lady. Destroy after reading.",
+    "Objection: this is getting sentimental. Overruled. ♡",
+    "Okay, enough feelings. Here’s a raspberry. 🍓"
+  ]
+};
+
+const ULTRA_RARE_BERRY_MESSAGES = [
+  "You’re still here? Good. I like having you around. ♡",
+  "There are probably easier ways of saying ‘I appreciate you’ than building an entire website. Unfortunately, you met me.",
+  "You once said some words feel like touching a hot stove. Nothing on this page requires you to touch it. Just enjoy your book, m’lady.",
+  "If you’re reading this on a bad day: you don’t have to be funny, interesting, talkative or okay. The raspberries still accept you.",
+  "I hope one day you randomly open this months from now, find this message, and smile because some idiot was thinking about you when he wrote it."
+];
+
+let berryMessageTimer = null;
+let berryMessageHideTimer = null;
+let berryMessageShownCount = 0;
+let berryMessageScheduleStep = 0;
+let berryMessageSessionLimit = Math.random() < 0.5 ? 3 : 4;
+let berryReadingStartedAt = null;
+
+function randomBetween(min, max) {
+  return min + Math.random() * (max - min);
+}
+
+function getBerryMessageHistory() {
+  try {
+    const value = JSON.parse(localStorage.getItem(BERRY_MESSAGE_HISTORY_KEY) || "[]");
+    return Array.isArray(value) ? value.slice(-BERRY_MESSAGE_HISTORY_LIMIT) : [];
+  } catch {
+    return [];
+  }
+}
+
+function rememberBerryMessage(id) {
+  const history = getBerryMessageHistory().filter(item => item !== id);
+  history.push(id);
+  localStorage.setItem(
+    BERRY_MESSAGE_HISTORY_KEY,
+    JSON.stringify(history.slice(-BERRY_MESSAGE_HISTORY_LIMIT))
+  );
+}
+
+function messageId(category, index) {
+  return `${category}:${index}`;
+}
+
+function pickFromCategory(category, history) {
+  const messages = BERRY_MESSAGES[category] || [];
+  let candidates = messages
+    .map((text, index) => ({ id: messageId(category, index), text }))
+    .filter(item => !history.includes(item.id));
+
+  if (!candidates.length) {
+    candidates = messages.map((text, index) => ({ id: messageId(category, index), text }));
+  }
+
+  return candidates[Math.floor(Math.random() * candidates.length)] || null;
+}
+
+function pickWeightedBerryMessage() {
+  const history = getBerryMessageHistory();
+  const readingMinutes = berryReadingStartedAt
+    ? (Date.now() - berryReadingStartedAt) / 60000
+    : 0;
+
+  // Ultra-rare notes are not part of the normal weighted pool. They only get
+  // a tiny chance after a longer reading session.
+  if (readingMinutes >= 20 && Math.random() < 0.008) {
+    let candidates = ULTRA_RARE_BERRY_MESSAGES
+      .map((text, index) => ({ id: `ultra:${index}`, text }))
+      .filter(item => !history.includes(item.id));
+
+    if (!candidates.length) {
+      candidates = ULTRA_RARE_BERRY_MESSAGES.map((text, index) => ({ id: `ultra:${index}`, text }));
+    }
+
+    return candidates[Math.floor(Math.random() * candidates.length)] || null;
+  }
+
+  const roll = Math.random() * 100;
+  let cumulative = 0;
+  let selectedCategory = "common";
+
+  for (const [category, weight] of Object.entries(BERRY_MESSAGE_WEIGHTS)) {
+    cumulative += weight;
+    if (roll < cumulative) {
+      selectedCategory = category;
+      break;
+    }
+  }
+
+  return pickFromCategory(selectedCategory, history);
+}
+
+function berryMessageCanAppear() {
+  return Boolean(
+    berryMessage &&
+    berryMessageText &&
+    !libraryScreen.classList.contains("hidden") &&
+    !document.hidden &&
+    !chapterDrawer?.classList.contains("open") &&
+    !moodPanel?.classList.contains("open") &&
+    !pigeonEasterEgg?.classList.contains("show") &&
+    berryMessage.hidden
+  );
+}
+
+function clearBerryMessageTimers() {
+  clearTimeout(berryMessageTimer);
+  clearTimeout(berryMessageHideTimer);
+  berryMessageTimer = null;
+  berryMessageHideTimer = null;
+}
+
+function scheduleBerryMessage({ retry = false } = {}) {
+  clearTimeout(berryMessageTimer);
+
+  if (berryMessageShownCount >= berryMessageSessionLimit) return;
+  if (libraryScreen.classList.contains("hidden")) return;
+
+  let delayMinutes;
+  if (retry) {
+    delayMinutes = randomBetween(0.5, 1.0);
+  } else {
+    const ranges = [
+      [4, 8],
+      [7, 15],
+      [10, 20]
+    ];
+    const [min, max] = ranges[Math.min(berryMessageScheduleStep, ranges.length - 1)];
+    delayMinutes = randomBetween(min, max);
+  }
+
+  berryMessageTimer = setTimeout(() => {
+    berryMessageTimer = null;
+    tryShowBerryMessage();
+  }, delayMinutes * 60 * 1000);
+}
+
+function tryShowBerryMessage() {
+  if (berryMessageShownCount >= berryMessageSessionLimit) return;
+
+  if (!berryMessageCanAppear()) {
+    scheduleBerryMessage({ retry: true });
+    return;
+  }
+
+  const selected = pickWeightedBerryMessage();
+  if (!selected) {
+    scheduleBerryMessage({ retry: true });
+    return;
+  }
+
+  showBerryMessage(selected);
+}
+
+function showBerryMessage(selected) {
+  if (!berryMessage || !berryMessageText) return;
+
+  const positions = ["top-left", "top-right", "bottom-left", "bottom-right"];
+  const position = positions[Math.floor(Math.random() * positions.length)];
+
+  berryMessage.classList.remove(
+    "berry-message-top-left",
+    "berry-message-top-right",
+    "berry-message-bottom-left",
+    "berry-message-bottom-right",
+    "show"
+  );
+  berryMessage.classList.add(`berry-message-${position}`);
+  berryMessageText.textContent = selected.text;
+  berryMessage.hidden = false;
+  berryMessage.setAttribute("aria-label", `${selected.text} Tap to dismiss.`);
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => berryMessage.classList.add("show"));
+  });
+
+  rememberBerryMessage(selected.id);
+  berryMessageShownCount += 1;
+  berryMessageScheduleStep += 1;
+
+  const visibleForMs = randomBetween(6, 10) * 1000;
+  clearTimeout(berryMessageHideTimer);
+  berryMessageHideTimer = setTimeout(() => {
+    hideBerryMessage({ scheduleNext: true });
+  }, visibleForMs);
+}
+
+function hideBerryMessage({ scheduleNext = false } = {}) {
+  clearTimeout(berryMessageHideTimer);
+  berryMessageHideTimer = null;
+
+  if (!berryMessage || berryMessage.hidden) {
+    if (scheduleNext) scheduleBerryMessage();
+    return;
+  }
+
+  berryMessage.classList.remove("show");
+
+  setTimeout(() => {
+    if (!berryMessage.classList.contains("show")) {
+      berryMessage.hidden = true;
+      berryMessageText.textContent = "";
+    }
+  }, 280);
+
+  if (scheduleNext) {
+    scheduleBerryMessage();
+  }
+}
+
+function startBerryMessageSession() {
+  if (!berryReadingStartedAt) {
+    berryReadingStartedAt = Date.now();
+  }
+
+  if (!berryMessageTimer && berryMessageShownCount < berryMessageSessionLimit) {
+    scheduleBerryMessage();
+  }
+}
 
 function clearPigeonTimers() {
   clearTimeout(pigeonRevealTimer);
@@ -257,6 +659,7 @@ async function openLibrary() {
   // usable immediately and switches to global numbering once this completes.
   ensureBookPagination();
   schedulePigeonTease();
+  startBerryMessageSession();
 }
 
 function backToCover() {
@@ -264,6 +667,8 @@ function backToCover() {
   coverScreen.classList.remove("hidden");
   closeDrawer();
   hidePigeon();
+  clearBerryMessageTimers();
+  hideBerryMessage({ scheduleNext: false });
 }
 
 function renderChapterDrawer() {
@@ -1209,6 +1614,10 @@ pigeonEasterEgg?.addEventListener("mouseenter", () => {
 
 pigeonEasterEgg?.addEventListener("mouseleave", () => {
   schedulePigeonHide(700);
+});
+
+berryMessage?.addEventListener("click", () => {
+  hideBerryMessage({ scheduleNext: true });
 });
 
 pigeonTouchHotspot?.addEventListener("click", event => {

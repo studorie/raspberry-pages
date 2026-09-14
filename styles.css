@@ -1715,3 +1715,189 @@ label,
 [role="button"] {
   cursor: pointer;
 }
+
+/* ---------------------------------------------------------
+   v16 - raspberry page messages
+--------------------------------------------------------- */
+.berry-message {
+  position: absolute;
+  z-index: 18;
+  width: min(270px, calc(100% - 38px));
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px 13px 13px;
+  border: 1px solid rgba(124, 50, 77, .16);
+  border-radius: 28px 34px 30px 18px;
+  color: #643449;
+  background:
+    radial-gradient(circle at 22% 18%, rgba(255,255,255,.92) 0 24px, transparent 25px),
+    radial-gradient(circle at 45% 9%, rgba(255,255,255,.82) 0 30px, transparent 31px),
+    linear-gradient(145deg, rgba(255, 248, 240, .985), rgba(255, 233, 239, .97));
+  box-shadow:
+    0 14px 30px rgba(58, 7, 31, .17),
+    inset 0 1px 0 rgba(255,255,255,.8);
+  font-family: "Segoe Print", "Bradley Hand", "Segoe UI", sans-serif;
+  font-size: 13px;
+  line-height: 1.42;
+  text-align: left;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(7px) scale(.96);
+  pointer-events: none;
+  transition: opacity .25s ease, transform .28s cubic-bezier(.2,.8,.2,1);
+}
+
+.berry-message[hidden] {
+  display: none !important;
+}
+
+.berry-message.show {
+  opacity: .98;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.berry-message img {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 3px rgba(86, 8, 43, .18));
+  transform: rotate(-8deg);
+}
+
+.berry-message span {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+.berry-message-top-left {
+  top: 70px;
+  left: 18px;
+  transform-origin: top left;
+}
+
+.berry-message-top-right {
+  top: 70px;
+  right: 18px;
+  transform-origin: top right;
+}
+
+.berry-message-bottom-left {
+  bottom: 52px;
+  left: 18px;
+  transform-origin: bottom left;
+}
+
+.berry-message-bottom-right {
+  right: 18px;
+  bottom: 52px;
+  transform-origin: bottom right;
+}
+
+body.warm-light .berry-message {
+  color: #604b37;
+  border-color: rgba(112, 77, 45, .16);
+  background:
+    radial-gradient(circle at 22% 18%, rgba(255,250,226,.94) 0 24px, transparent 25px),
+    radial-gradient(circle at 45% 9%, rgba(255,247,220,.88) 0 30px, transparent 31px),
+    linear-gradient(145deg, rgba(248, 237, 203, .985), rgba(242, 220, 188, .97));
+}
+
+@media (max-width: 760px) {
+  .berry-message {
+    width: min(225px, calc(100% - 24px));
+    min-height: 58px;
+    gap: 8px;
+    padding: 10px 12px 10px 10px;
+    border-radius: 24px 27px 24px 15px;
+    font-size: 11.5px;
+    line-height: 1.38;
+  }
+
+  .berry-message img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .berry-message-top-left {
+    top: 54px;
+    left: 10px;
+  }
+
+  .berry-message-top-right {
+    top: 54px;
+    right: 10px;
+  }
+
+  .berry-message-bottom-left {
+    bottom: 42px;
+    left: 10px;
+  }
+
+  .berry-message-bottom-right {
+    right: 10px;
+    bottom: 42px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .berry-message {
+    transition: none !important;
+  }
+}
+
+/* Small cloud lobes so the surprise reads as a raspberry-cloud rather than a toast. */
+.berry-message::before,
+.berry-message::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background: rgba(255, 246, 241, .98);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+}
+
+.berry-message::before {
+  width: 34px;
+  height: 34px;
+  top: -9px;
+  left: 38px;
+}
+
+.berry-message::after {
+  width: 25px;
+  height: 25px;
+  top: -5px;
+  left: 66px;
+}
+
+.berry-message img {
+  position: relative;
+  z-index: 1;
+}
+
+body.warm-light .berry-message::before,
+body.warm-light .berry-message::after {
+  background: rgba(247, 234, 200, .98);
+}
+
+@media (max-width: 760px) {
+  .berry-message::before {
+    width: 29px;
+    height: 29px;
+    top: -7px;
+    left: 32px;
+  }
+
+  .berry-message::after {
+    width: 21px;
+    height: 21px;
+    top: -4px;
+    left: 55px;
+  }
+}
