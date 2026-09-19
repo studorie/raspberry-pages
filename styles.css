@@ -1901,3 +1901,299 @@ body.warm-light .berry-message::after {
     left: 55px;
   }
 }
+
+
+/* ---------------------------------------------------------
+   v17 - white butterfly intro + page-corner butterfly
+--------------------------------------------------------- */
+
+.butterfly-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+  cursor: pointer;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(146, 42, 87, .35), transparent 42%),
+    radial-gradient(circle at 14% 82%, rgba(117, 22, 64, .24), transparent 32%),
+    radial-gradient(circle at 86% 16%, rgba(117, 22, 64, .18), transparent 28%),
+    linear-gradient(145deg, #2c0015, #650b39 56%, #38001c);
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 1.18s ease, visibility 1.18s ease;
+}
+
+.butterfly-intro::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 47%;
+  width: min(760px, 95vw);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 242, 244, .06), transparent 66%);
+  filter: blur(14px);
+  pointer-events: none;
+}
+
+.butterfly-intro.butterfly-intro-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.butterfly-intro-seen .butterfly-intro {
+  display: none;
+}
+
+.butterfly-flight-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.butterfly-intro-copy {
+  position: relative;
+  z-index: 20;
+  padding: 28px;
+  text-align: center;
+  color: #fff8f1;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: butterflyCopyIn 1.45s ease .55s forwards;
+  pointer-events: none;
+}
+
+.butterfly-intro-eyebrow {
+  display: block;
+  margin-bottom: 12px;
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: rgba(255, 245, 241, .56);
+}
+
+.butterfly-intro-copy h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(48px, 8vw, 84px);
+  font-weight: 400;
+  line-height: .95;
+  letter-spacing: -.045em;
+}
+
+.butterfly-intro-copy p {
+  margin: 17px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(13px, 2vw, 17px);
+  font-style: italic;
+  color: rgba(255, 245, 241, .74);
+}
+
+.butterfly-loading-line {
+  width: 120px;
+  height: 1px;
+  margin: 27px auto 0;
+  overflow: hidden;
+  background: rgba(255, 255, 255, .12);
+}
+
+.butterfly-loading-line::after {
+  content: "";
+  display: block;
+  width: 55%;
+  height: 100%;
+  background: rgba(255, 255, 255, .78);
+  animation: butterflyLoader 3.8s ease-in-out infinite;
+}
+
+.butterfly-skip-hint {
+  position: absolute;
+  z-index: 30;
+  left: 50%;
+  bottom: max(22px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: Arial, sans-serif;
+  font-size: 9px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .34);
+  pointer-events: none;
+}
+
+.white-butterfly {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 94px;
+  height: 70px;
+  z-index: 12;
+  pointer-events: none;
+  will-change: transform, opacity;
+  filter:
+    drop-shadow(0 5px 7px rgba(20, 0, 10, .23))
+    drop-shadow(0 0 7px rgba(255, 255, 255, .10));
+}
+
+.white-butterfly.distant {
+  opacity: .74;
+  filter:
+    blur(.28px)
+    drop-shadow(0 3px 5px rgba(20, 0, 10, .15));
+}
+
+.white-butterfly svg,
+.page-butterfly-peek svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.white-butterfly .wing-left,
+.page-butterfly-peek .wing-left {
+  transform-box: fill-box;
+  transform-origin: right center;
+  animation: butterflyWingLeft var(--flap-speed, .34s) ease-in-out infinite alternate;
+}
+
+.white-butterfly .wing-right,
+.page-butterfly-peek .wing-right {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: butterflyWingRight var(--flap-speed, .34s) ease-in-out infinite alternate;
+}
+
+.white-butterfly .body-group,
+.page-butterfly-peek .body-group {
+  transform-origin: center;
+  animation: butterflyBodyPulse calc(var(--flap-speed, .34s) * 2) ease-in-out infinite alternate;
+}
+
+@keyframes butterflyWingLeft {
+  0% { transform: scaleX(1) skewY(-1deg); }
+  45% { transform: scaleX(.55) skewY(2deg); }
+  100% { transform: scaleX(.18) skewY(4deg); }
+}
+
+@keyframes butterflyWingRight {
+  0% { transform: scaleX(1) skewY(1deg); }
+  45% { transform: scaleX(.55) skewY(-2deg); }
+  100% { transform: scaleX(.18) skewY(-4deg); }
+}
+
+@keyframes butterflyBodyPulse {
+  from { transform: translateY(0); }
+  to { transform: translateY(1.4px); }
+}
+
+@keyframes butterflyCopyIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes butterflyLoader {
+  0% { transform: translateX(-120%); }
+  55% { transform: translateX(90%); }
+  100% { transform: translateX(220%); }
+}
+
+/* A tiny resident butterfly peeking into the paper from the bottom-right edge. */
+.page-butterfly-peek {
+  --flap-speed: .72s;
+  position: absolute;
+  z-index: 8;
+  right: -25px;
+  bottom: -24px;
+  width: 76px;
+  height: 57px;
+  opacity: .82;
+  transform: rotate(-18deg);
+  transform-origin: center;
+  pointer-events: none;
+  filter:
+    drop-shadow(0 4px 4px rgba(75, 47, 42, .12))
+    drop-shadow(0 0 4px rgba(255, 255, 255, .18));
+}
+
+body.warm-light .page-butterfly-peek {
+  opacity: .76;
+  filter:
+    sepia(.08)
+    drop-shadow(0 4px 4px rgba(75, 47, 42, .12));
+}
+
+@media (max-width: 760px) {
+  .butterfly-intro-copy {
+    padding: 22px;
+  }
+
+  .butterfly-intro-copy h1 {
+    font-size: clamp(50px, 15vw, 66px);
+  }
+
+  .butterfly-intro-eyebrow {
+    max-width: 280px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 9px;
+    letter-spacing: .23em;
+  }
+
+  .white-butterfly {
+    width: 72px;
+    height: 54px;
+  }
+
+  .butterfly-skip-hint {
+    bottom: max(17px, env(safe-area-inset-bottom));
+  }
+
+  .page-butterfly-peek {
+    right: -18px;
+    bottom: -18px;
+    width: 56px;
+    height: 42px;
+    opacity: .78;
+    transform: rotate(-17deg);
+  }
+}
+
+@media (max-width: 420px) {
+  .page-butterfly-peek {
+    right: -16px;
+    bottom: -16px;
+    width: 50px;
+    height: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .white-butterfly {
+    display: none !important;
+  }
+
+  .butterfly-intro-copy {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
+  }
+
+  .butterfly-loading-line::after,
+  .page-butterfly-peek .wing-left,
+  .page-butterfly-peek .wing-right,
+  .page-butterfly-peek .body-group {
+    animation: none !important;
+  }
+}

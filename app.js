@@ -93,6 +93,9 @@ const pigeonEasterEgg = document.getElementById("pigeonEasterEgg");
 const pigeonTouchHotspot = document.getElementById("pigeonTouchHotspot");
 const berryMessage = document.getElementById("berryMessage");
 const berryMessageText = document.getElementById("berryMessageText");
+const butterflyIntro = document.getElementById("butterflyIntro");
+const butterflyFlightLayer = document.getElementById("butterflyFlightLayer");
+const pageButterflyPeek = document.getElementById("pageButterflyPeek");
 
 // Raspberry page messages
 // These are intentionally lightweight and infrequent. They appear only while
@@ -616,6 +619,261 @@ function saveState() {
     })
   );
 }
+
+
+// ---------------------------------------------------------
+// White butterfly intro + page-corner butterfly
+// ---------------------------------------------------------
+const BUTTERFLY_INTRO_SESSION_KEY = "adiButterflyIntroSeen";
+let butterflyIntroTimer = null;
+let butterflyIntroRaf = null;
+let butterflyIntroFinished = false;
+
+function butterflySafeId(value) {
+  return String(value).replace(/[^a-zA-Z0-9_-]/g, "");
+}
+
+function createWhiteButterflySVG(id = "butterfly") {
+  const uid = butterflySafeId(id);
+  const wingWhite = `wing-white-${uid}`;
+  const wingShade = `wing-shade-${uid}`;
+
+  return `
+    <svg viewBox="0 0 100 74" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="${wingWhite}" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity=".99" />
+          <stop offset="70%" stop-color="#fffdf8" stop-opacity=".93" />
+          <stop offset="100%" stop-color="#d7d8d6" stop-opacity=".74" />
+        </linearGradient>
+        <linearGradient id="${wingShade}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity=".90" />
+          <stop offset="100%" stop-color="#e8e4dc" stop-opacity=".67" />
+        </linearGradient>
+      </defs>
+
+      <g class="wing-left">
+        <path
+          d="M49 35 C38 16,20 4,8 10 C1 14,3 24,9 31 C16 39,32 42,49 40 Z"
+          fill="url(#${wingWhite})" stroke="rgba(125,125,125,.25)" stroke-width=".7"
+        />
+        <path
+          d="M9 10 C16 7,25 10,32 15 C25 15,17 18,9 23 C5 19,4 14,9 10 Z"
+          fill="rgba(80,82,82,.17)"
+        />
+        <path
+          d="M49 38 C37 39,21 40,15 49 C10 57,18 64,29 63 C39 62,46 54,50 42 Z"
+          fill="url(#${wingShade})" stroke="rgba(125,125,125,.20)" stroke-width=".7"
+        />
+        <path
+          d="M47 36 L15 15 M46 37 L10 29 M47 39 L20 51 M47 40 L31 59"
+          fill="none" stroke="rgba(115,115,115,.19)" stroke-width=".65" stroke-linecap="round"
+        />
+      </g>
+
+      <g class="wing-right">
+        <path
+          d="M51 35 C62 16,80 4,92 10 C99 14,97 24,91 31 C84 39,68 42,51 40 Z"
+          fill="url(#${wingWhite})" stroke="rgba(125,125,125,.25)" stroke-width=".7"
+        />
+        <path
+          d="M91 10 C84 7,75 10,68 15 C75 15,83 18,91 23 C95 19,96 14,91 10 Z"
+          fill="rgba(80,82,82,.17)"
+        />
+        <path
+          d="M51 38 C63 39,79 40,85 49 C90 57,82 64,71 63 C61 62,54 54,50 42 Z"
+          fill="url(#${wingShade})" stroke="rgba(125,125,125,.20)" stroke-width=".7"
+        />
+        <path
+          d="M53 36 L85 15 M54 37 L90 29 M53 39 L80 51 M53 40 L69 59"
+          fill="none" stroke="rgba(115,115,115,.19)" stroke-width=".65" stroke-linecap="round"
+        />
+      </g>
+
+      <g class="body-group">
+        <path d="M49 28 C43 19,41 13,37 9" fill="none" stroke="rgba(82,74,70,.75)" stroke-width=".8" stroke-linecap="round" />
+        <path d="M51 28 C57 19,59 13,63 9" fill="none" stroke="rgba(82,74,70,.75)" stroke-width=".8" stroke-linecap="round" />
+        <circle cx="37" cy="9" r="1.1" fill="rgba(75,68,65,.8)" />
+        <circle cx="63" cy="9" r="1.1" fill="rgba(75,68,65,.8)" />
+        <ellipse cx="50" cy="28" rx="2.6" ry="3" fill="#69635f" />
+        <ellipse cx="50" cy="35" rx="3" ry="6" fill="#77716d" />
+        <path d="M48.7 38 C48.4 48,48.8 58,50 63 C51.2 58,51.6 48,51.3 38 Z" fill="#746d68" />
+      </g>
+    </svg>
+  `;
+}
+
+function butterflyEaseOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+function butterflyEaseInOutSine(t) {
+  return -(Math.cos(Math.PI * t) - 1) / 2;
+}
+
+function finishButterflyIntro() {
+  if (!butterflyIntro || butterflyIntroFinished) return;
+
+  butterflyIntroFinished = true;
+  clearTimeout(butterflyIntroTimer);
+  butterflyIntroTimer = null;
+
+  if (butterflyIntroRaf) {
+    cancelAnimationFrame(butterflyIntroRaf);
+    butterflyIntroRaf = null;
+  }
+
+  butterflyIntro.classList.add("butterfly-intro-hidden");
+  butterflyIntro.setAttribute("aria-hidden", "true");
+}
+
+function startButterflyIntro({ force = false } = {}) {
+  if (!butterflyIntro || !butterflyFlightLayer) return;
+
+  if (!force) {
+    try {
+      if (sessionStorage.getItem(BUTTERFLY_INTRO_SESSION_KEY) === "1") {
+        butterflyIntro.classList.add("butterfly-intro-hidden");
+        butterflyIntro.setAttribute("aria-hidden", "true");
+        return;
+      }
+    } catch {}
+  }
+
+  document.documentElement.classList.remove("butterfly-intro-seen");
+  butterflyIntro.classList.remove("butterfly-intro-hidden");
+  butterflyIntro.setAttribute("aria-hidden", "false");
+  butterflyIntroFinished = false;
+
+  clearTimeout(butterflyIntroTimer);
+  if (butterflyIntroRaf) cancelAnimationFrame(butterflyIntroRaf);
+  butterflyFlightLayer.replaceChildren();
+
+  try {
+    sessionStorage.setItem(BUTTERFLY_INTRO_SESSION_KEY, "1");
+  } catch {}
+
+  const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+
+  if (prefersReducedMotion) {
+    butterflyIntroTimer = setTimeout(finishButterflyIntro, 1800);
+    return;
+  }
+
+  const settings = [
+    { delay: 0,    duration: 7700, scale: .98, flap: .29, side: -.98, y: -.06, drift: -.06 },
+    { delay: 140,  duration: 7600, scale: .84, flap: .31, side: -.68, y: -.17, drift: -.04 },
+    { delay: 300,  duration: 7900, scale: .90, flap: .27, side: -.31, y: -.07, drift: -.03 },
+    { delay: 470,  duration: 8800, scale: .76, flap: .24, side:  .05, y: -.20, drift:  .01, distant: true },
+    { delay: 650,  duration: 8150, scale: .81, flap: .26, side:  .40, y: -.08, drift:  .04 },
+    { delay: 840,  duration: 8500, scale: .70, flap: .23, side:  .72, y: -.16, drift:  .06, distant: true },
+    { delay: 1050, duration: 8050, scale: .64, flap: .22, side: 1.00, y: -.03, drift:  .05, distant: true },
+    { delay: 1240, duration: 9100, scale: .60, flap: .21, side:  .02, y: -.25, drift: -.01, distant: true }
+  ];
+
+  const createdAt = performance.now();
+  const butterflies = settings.map((config, index) => {
+    const element = document.createElement("div");
+    element.className = "white-butterfly" + (config.distant ? " distant" : "");
+    element.style.setProperty("--flap-speed", `${config.flap}s`);
+    element.innerHTML = createWhiteButterflySVG(`intro-${Date.now()}-${index}`);
+    butterflyFlightLayer.appendChild(element);
+
+    return {
+      element,
+      config,
+      index,
+      start: createdAt + config.delay
+    };
+  });
+
+  const animate = now => {
+    if (butterflyIntroFinished) return;
+
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const centerX = width * .5;
+    const startY = height + Math.max(30, height * .035);
+    const tornadoTopY = height * .54;
+    const maxSpread = Math.min(width * .39, 390);
+    const phase1End = .47;
+
+    butterflies.forEach(item => {
+      const { element, config, index } = item;
+      const elapsed = now - item.start;
+
+      if (elapsed < 0) {
+        element.style.opacity = "0";
+        return;
+      }
+
+      const progress = Math.min(elapsed / config.duration, 1);
+      let x;
+      let y;
+      let rotation;
+      let scale;
+      let opacity = 1;
+
+      if (progress <= phase1End) {
+        const t = progress / phase1End;
+        const eased = butterflyEaseOutCubic(t);
+        const turns = 2.35 + index * .035;
+        const angle = t * Math.PI * 2 * turns + index * .72;
+        const radius = (Math.min(width * .16, 125) * (1 - eased * .62)) + index * 2.5;
+
+        x = centerX + Math.cos(angle) * radius;
+        y = startY - (startY - tornadoTopY) * eased + Math.sin(angle * 1.35) * Math.min(18, height * .02);
+        rotation = Math.sin(angle) * 13;
+        scale = config.scale * (.76 + .24 * eased);
+        opacity = Math.min(1, t * 2.8);
+      } else {
+        const t = (progress - phase1End) / (1 - phase1End);
+        const eased = butterflyEaseInOutSine(t);
+        const spreadStartX = centerX + Math.cos(index * 1.17) * Math.min(44, width * .06);
+        const spreadStartY = tornadoTopY + Math.sin(index * 1.61) * Math.min(24, height * .025);
+        const targetX = centerX + config.side * maxSpread;
+        const targetY = tornadoTopY + config.y * height;
+        const waveX = Math.sin(t * Math.PI * 2.35 + index) * Math.min(22, width * .035);
+        const waveY = Math.sin(t * Math.PI * 3.15 + index * 1.4) * Math.min(14, height * .018);
+
+        x = spreadStartX + (targetX - spreadStartX) * eased + config.drift * width * t + waveX;
+        y = spreadStartY + (targetY - spreadStartY) * eased + waveY;
+        rotation = Math.cos(t * Math.PI * 2.3 + index) * 9;
+        scale = config.scale * (.96 + Math.sin(t * Math.PI) * .06);
+
+        if (progress > .94) {
+          opacity = Math.max(0, 1 - (progress - .94) / .06);
+        }
+      }
+
+      const halfWidth = element.offsetWidth * .5;
+      const halfHeight = element.offsetHeight * .5;
+      element.style.opacity = String(Math.max(0, opacity));
+      element.style.transform = `translate3d(${x - halfWidth}px, ${y - halfHeight}px, 0) scale(${scale}) rotate(${rotation}deg)`;
+    });
+
+    butterflyIntroRaf = requestAnimationFrame(animate);
+  };
+
+  butterflyIntroRaf = requestAnimationFrame(animate);
+  butterflyIntroTimer = setTimeout(finishButterflyIntro, 6500);
+}
+
+function setupPageButterflyPeek() {
+  if (!pageButterflyPeek || pageButterflyPeek.childElementCount) return;
+  pageButterflyPeek.innerHTML = createWhiteButterflySVG("page-peek");
+}
+
+function setupButterflyIntro() {
+  if (!butterflyIntro) return;
+  butterflyIntro.addEventListener("click", finishButterflyIntro);
+  startButterflyIntro();
+}
+
+// Handy for testing the intro again from DevTools without opening a new session.
+window.playButterflyIntro = () => startButterflyIntro({ force: true });
+window.skipButterflyIntro = finishButterflyIntro;
+
 
 async function init() {
   const response = await fetch("chapters.json");
@@ -1693,4 +1951,6 @@ window.addEventListener("resize", () => {
   resizeTimer = setTimeout(reflowCurrentChapter, 320);
 });
 
+setupPageButterflyPeek();
+setupButterflyIntro();
 init();

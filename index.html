@@ -9,9 +9,34 @@
   <title>For Adi — Alchemised</title>
   <link rel="icon" type="image/png" href="assets/raspberry-reader.png">
   <link rel="apple-touch-icon" href="assets/raspberry-reader.png">
-  <link rel="stylesheet" href="styles.css?v=16">
+  <link rel="stylesheet" href="styles.css?v=17">
+  <script>
+    try {
+      if (sessionStorage.getItem("adiButterflyIntroSeen") === "1") {
+        document.documentElement.classList.add("butterfly-intro-seen");
+      }
+    } catch {}
+  </script>
 </head>
 <body>
+
+  <section
+    id="butterflyIntro"
+    class="butterfly-intro"
+    aria-label="Opening Adi's book"
+  >
+    <div id="butterflyFlightLayer" class="butterfly-flight-layer" aria-hidden="true"></div>
+
+    <div class="butterfly-intro-copy">
+      <span class="butterfly-intro-eyebrow">a little corner of the internet</span>
+      <h1>For Adi</h1>
+      <p>your book is waiting, m’lady</p>
+      <div class="butterfly-loading-line" aria-hidden="true"></div>
+    </div>
+
+    <div class="butterfly-skip-hint">tap anywhere to continue</div>
+  </section>
+
   <a class="skip-link" href="#mainContent">Skip to reading</a>
 
   <main id="mainContent" class="app" tabindex="-1">
@@ -136,6 +161,8 @@
 <article id="pageCard" class="paper-page" aria-live="polite" aria-label="Reading page">
           <div class="page-watermark berry-mark" aria-hidden="true">●</div>
 
+          <div id="pageButterflyPeek" class="page-butterfly-peek" aria-hidden="true"></div>
+
           <div class="paper-header">
             <span id="pageChapter">Alchemised</span>
             <span id="pageNumberTop">1</span>
@@ -242,6 +269,6 @@
     <audio id="ambientAudio" preload="auto"></audio>
   </main>
 
-  <script src="app.js?v=16"></script>
+  <script src="app.js?v=17"></script>
 </body>
 </html>
